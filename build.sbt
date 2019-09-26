@@ -8,6 +8,7 @@ updateOptions := updateOptions.value.withCachedResolution(true)
 
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.4"
 libraryDependencies += "org.apache.spark" %% "spark-graphx" % "2.4.4"
+libraryDependencies += "org.jsoup" % "jsoup" % "1.12.1"
 
 mainClass in assembly := Some("cmdline.MainConsole")
 
