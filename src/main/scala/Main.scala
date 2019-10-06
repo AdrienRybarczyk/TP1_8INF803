@@ -1,4 +1,7 @@
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
+import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.jsoup.Jsoup
 
 import scala.collection.mutable.ArrayBuffer
@@ -34,7 +37,7 @@ object Main extends App {
     //println(tabComponent(1))
     val tabComponentTrunc = tabComponent(1).split(",")
     val componentList = new ArrayBuffer[String]
-    for (i <- 0 until (tabComponentTrunc.length)) {
+    for (i <- 0 until tabComponentTrunc.length) {
       if(i> 0 && tabComponentTrunc(i).indexOf(" ")!= -1){
         tabComponentTrunc(i) = tabComponentTrunc(i).split(" ")(1)
       }
@@ -60,26 +63,44 @@ object Main extends App {
     tabSpell += new Sort(name,valueLevel,componentList,spellResistance)
   }
 
- /*for (i <- 0 until tabSpell.length) {
-    println(tabSpell(i).name + " : " + tabSpell(i).level + " : "+ tabSpell(i).componentList + " : "+ tabSpell(i).speelResistance)
-  }*/
-  val conf = new SparkConf()
+  /*val conf = new SparkConf()
     .setAppName("Save Pito")
     .setMaster("local[*]")
   val sc = new SparkContext(conf)
-  sc.setLogLevel("ERROR")
-  val test = sc.makeRDD(tabSpell)
-  val resultat = test.collect().filter(e => {
+  sc.setLogLevel("ERROR")*/
+
+  val spark: SparkSession = SparkSession.builder().master("local[*]").appName("Save Pito").getOrCreate()
+
+  val sqlContext = spark.sqlContext
+  val rddSpells: RDD[Sort] = spark.sparkContext.makeRDD(tabSpell)
+  val resultat = rddSpells.collect().filter(e => {
     e.level <= 4 && e.componentList.contains("V") && e.componentList.length == 1
   })
-  for (i <- 0 until resultat.length) {
-    println(resultat(i).name + " : " + resultat(i).level + " : "+ resultat(i).componentList + " : "+ resultat(i).speelResistance)
+  for (i <- resultat.indices) {
+    println(resultat(i).name + " : " + resultat(i).level + " : "+ resultat(i).componentList + " : "+ resultat(i).spellResistance)
   }
 println("Total resultat "+ resultat.length)
+
+  val result: RDD[Row] = rddSpells.map(f=> Row(f.name,f.level,f.componentList,f.spellResistance))
+  val fields = Array(
+    StructField("Name", StringType, nullable = false),
+    StructField("Level", IntegerType, nullable = false),
+    StructField("ComponentList", ArrayType(StringType)),
+    StructField("Spell Resistance", BooleanType, nullable = false)
+  )
+  val df = spark.createDataFrame(result,StructType(fields))
+
+  val spellsToSavePito: Dataset[Row] = df.select("Name")
+    .where(array_contains(df("ComponentList"), "V"))
+    .where(size(df("ComponentList")) === 1)
+    .where(df("level") <= 4)
+  println(spellsToSavePito.collect().foreach(println))
+  println("Total resultat version Spark "+ spellsToSavePito.count())
+
 }
 
 class Sort (var name: String,
            var level: Int,
            var componentList: ArrayBuffer[String],
-           var speelResistance: Boolean
+           var spellResistance: Boolean
 )extends Serializable

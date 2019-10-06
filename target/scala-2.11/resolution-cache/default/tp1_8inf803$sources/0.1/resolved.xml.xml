@@ -4,7 +4,7 @@
 		module="tp1_8inf803$sources"
 		revision="0.1"
 		status="integration"
-		publication="20190927001106"
+		publication="20191004144121"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>

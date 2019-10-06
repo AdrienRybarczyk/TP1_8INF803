@@ -7,7 +7,7 @@
 		revision="0.1"
 		conf="test"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20190927001106"/>
+		date="20191004144121"/>
 	<dependencies>
 		<module organisation="org.jsoup" name="jsoup">
 			<revision name="1.12.1" status="release" pubdate="20190513015533" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://jsoup.org/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="104">
@@ -15,7 +15,7 @@
 				<metadata-artifact status="no" details="" size="3802" time="0" location="C:\Users\adrie\.ivy2\cache\org.jsoup\jsoup\ivy-1.12.1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/jsoup/jsoup/1.12.1/jsoup-1.12.1.pom"/>
 				<caller organisation="default" name="tp1_8inf803$sources" conf="test, compile, runtime" rev="1.12.1" rev-constraint-default="1.12.1" rev-constraint-dynamic="1.12.1" callerrev="0.1"/>
 				<artifacts>
-					<artifact name="jsoup" type="src" ext="jar" extra-classifier="sources" status="successful" details="" size="186644" time="199" location="C:\Users\adrie\.ivy2\cache\org.jsoup\jsoup\srcs\jsoup-1.12.1-sources.jar">
+					<artifact name="jsoup" type="src" ext="jar" extra-classifier="sources" status="no" details="" size="186644" time="0" location="C:\Users\adrie\.ivy2\cache\org.jsoup\jsoup\srcs\jsoup-1.12.1-sources.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/jsoup/jsoup/1.12.1/jsoup-1.12.1-sources.jar"/>
 					</artifact>
 				</artifacts>
