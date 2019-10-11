@@ -29,15 +29,18 @@ object PageRank extends App {
     contributions.collect
 
     //On récupère les noeuds n'ayant pas de lien entrant (dans notre cas la page D)
-    val noInlinks = links.subtractByKey(contributions)
+    val noeuds_sans_liens_entrants = links.subtractByKey(contributions)
 
     //On ajoute les autres pages et on assigne un pagerank de 0 aux pages qui n'ont pas de contribution
-    val allPages = noInlinks.map(page => (page._1,0.0)).union(contributions)
+    val allPages = noeuds_sans_liens_entrants.map(page => (page._1,0.0)).union(contributions)
 
     //On modifie et sauvegarde la valeur du nouveau pagerank
     ranks = allPages.mapValues(v => 0.15 + 0.85*v)
+
+    println("**************************************")
+    println("Itération numéro : " + i)
+    //Affichage :  Nom du noeud, pagerank
+    ranks.sortByKey(true).collect.foreach(println)
   }
   println("END")
-  ranks.collect.foreach(println)
-
 }

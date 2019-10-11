@@ -7,7 +7,6 @@ import org.jsoup.Jsoup
 import scala.collection.mutable.ArrayBuffer
 
 object Main extends App {
-
   var tabSpell = ArrayBuffer[Sort]()
 
   for(i <- 1 to 1600) {
@@ -16,7 +15,6 @@ object Main extends App {
 
     ///NAME
     val name = doc.select(".heading p").text()
-    //println(name)
 
     val desc = doc.select(".SPDet")
 
@@ -31,10 +29,7 @@ object Main extends App {
 
     //Component /////
     val component = desc.get(2).text()
-    //println(component)
-
     val tabComponent = component.split("Components ")
-    //println(tabComponent(1))
     val tabComponentTrunc = tabComponent(1).split(",")
     val componentList = new ArrayBuffer[String]
     for (i <- 0 until tabComponentTrunc.length) {
@@ -43,11 +38,9 @@ object Main extends App {
       }
       componentList += tabComponentTrunc(i)
     }
-    //println(componentList)
 
     //Spell Resistance ////
     val data_speelresistance = desc.get(desc.size()-1).text()
-    //println(data_speelresistance)
     var spellResistance = true
     if(data_speelresistance.indexOf("Spell Resistance")!= -1){
       val spellresistance = data_speelresistance.split("Spell Resistance")(1)
@@ -63,12 +56,6 @@ object Main extends App {
     tabSpell += new Sort(name,valueLevel,componentList,spellResistance)
   }
 
-  /*val conf = new SparkConf()
-    .setAppName("Save Pito")
-    .setMaster("local[*]")
-  val sc = new SparkContext(conf)
-  sc.setLogLevel("ERROR")*/
-
   val spark: SparkSession = SparkSession.builder().master("local[*]").appName("Save Pito").getOrCreate()
 
   val sqlContext = spark.sqlContext
@@ -79,8 +66,10 @@ object Main extends App {
   for (i <- resultat.indices) {
     println(resultat(i).name + " : " + resultat(i).level + " : "+ resultat(i).componentList + " : "+ resultat(i).spellResistance)
   }
-println("Total resultat "+ resultat.length)
+  println("Total resultat Crawler "+ resultat.length)
 
+  println("*************************")
+  println("Version Spark DataFrame")
   val result: RDD[Row] = rddSpells.map(f=> Row(f.name,f.level,f.componentList,f.spellResistance))
   val fields = Array(
     StructField("Name", StringType, nullable = false),
@@ -95,8 +84,7 @@ println("Total resultat "+ resultat.length)
     .where(size(df("ComponentList")) === 1)
     .where(df("level") <= 4)
   println(spellsToSavePito.collect().foreach(println))
-  println("Total resultat version Spark "+ spellsToSavePito.count())
-
+  println("Total resultat version Spark DataFrame "+ spellsToSavePito.count())
 }
 
 class Sort (var name: String,
